@@ -1,0 +1,203 @@
+const char MAIN_page[] = R"=====(
+  <!DOCTYPE HTML>
+  <HTML style="background-color:black;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <body style="text-align:center;color:white;" onload="javascript:start();" >
+  <style>.slidecontainer {
+      width: 100%;
+      font-size: .7em;
+  }
+  
+  .slider {
+      -webkit-appearance: none;
+      width: 50%;
+      height: 1em;
+      border-radius: 5px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+      
+      
+  }
+  
+  .slider:hover {
+      opacity: 1;
+  }
+  
+  .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+  }
+  table, th, td {
+  border: 1px solid red;
+  }
+  table.center {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.5em;
+  }
+  th, td {
+    padding: .2em;
+    height: 3em;
+  }
+  button.style1{
+    padding: 1em;
+    margin-left: .2em;
+    border-radius: 5%;
+  }
+  .styletext{
+    font-size: 1.5em;
+  }
+
+  </style>
+  
+  <div  id="demo"  >
+    <span style="font-size:10vw;color:red;"> NIXIECLOCK</span>
+    <table class="center" style="text-align: center;">
+      
+      <tr >
+        <td>
+          Status board    
+        </td>  
+        <td>
+           <span id="statusboard">Running</span>
+        </td>
+
+      </tr>
+      <tr >
+        <td>
+          Hora
+        </td>  
+        <td>
+          <span id="tiempo"> - </span>         
+        </td>
+      </tr>
+
+      <tr >
+        <td>
+          Actualizar Soft
+        </td>  
+        <td>
+          <button  class="style1" type="button"  onclick="upload()">Upload</button>            
+        </td>
+      </tr>
+
+    </table>
+  </div>
+  
+
+  
+  
+  <script>
+
+  function start(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {    
+      if (this.readyState == 4 && this.status == 200) {
+        var obj = JSON.parse(this.responseText);
+        output.innerHTML = obj["local"]["brillo"];
+        slider.value = obj["local"]["brillo"];
+        document.getElementById("LEDState").innerHTML = obj["local"]["status"];
+        console.log(obj); 
+      }
+    };
+    xhttp.open("GET", "setup", true);
+    xhttp.send();
+  }
+  
+  function sendData(led) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("LEDState").innerHTML =
+        this.responseText;
+      }
+  
+    };
+    xhttp.open("GET", "setLED?LEDstate="+led, true);
+    xhttp.send();
+  }
+  function upload() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("statusboard").innerHTML = this.responseText;
+      }
+    }
+    //document.getElementById("statusboard").innerHTML = "Restarting...";
+    xhttp.open("GET", "restart", true);
+    xhttp.send();
+  }
+  function sendTIME(data) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("tiempo").innerHTML = this.responseText;
+     }
+    };
+    xhttp.open("GET", "setTIME?tiempo="+data, true);
+    xhttp.send();
+  }
+  setInterval(function() {
+    // Call a function repetatively with 2 Second interval
+    //getData();
+    getTime();
+    var d = new Date();
+    var res = d.getHours() + ":" + d.getMinutes()+":"+d.getSeconds()+"hrs";
+    //sendTIME(res);
+  }, 1000); //2000mSeconds update rate
+  
+  function getData() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("ADCValue").innerHTML =
+        this.responseText;
+  
+      }
+        //var d = new Date();
+        //var res = d.getHours() + ":" + d.getMinutes()+":"+d.getSeconds()+"hrs";
+      //document.getElementById("tiempo").innerHTML = res;
+      
+    };
+    xhttp.open("GET", "readADC", true);
+    xhttp.send();
+  }
+  function getTime() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("tiempo").innerHTML =this.responseText;
+  
+      }
+        //var d = new Date();
+        //var res = d.getHours() + ":" + d.getMinutes()+":"+d.getSeconds()+"hrs";
+      //document.getElementById("tiempo").innerHTML = res;
+      
+    };
+    xhttp.open("GET", "readTIME", true);
+    xhttp.send();
+  }
+  </script>
+
+
+
+  </body>
+  </html>
+)=====";
